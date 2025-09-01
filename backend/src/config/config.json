@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "grodo",
+    "password": "admin123",
+    "database": "my-store",
+    "host": "localhost",
+    "dialect": "postgres"
+  }
+}

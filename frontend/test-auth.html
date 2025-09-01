@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test de Autenticación</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <h1>Test de Autenticación</h1>
+
+    <form id="loginForm">
+      <div>
+        <label for="username">Usuario:</label>
+        <input type="text" id="username" name="username" required />
+      </div>
+      <div>
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required />
+      </div>
+      <button type="submit">Login</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+      const API_URL = "http://localhost:3000/api";
+
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const username = document.getElementById("username").value;
+          const password = document.getElementById("password").value;
+          const resultDiv = document.getElementById("result");
+
+          try {
+            console.log("Intentando login con:", username);
+
+            const response = await axios.post(`${API_URL}/auth/login`, {
+              username,
+              password,
+            });
+
+            console.log("Respuesta del servidor:", response.data);
+            resultDiv.innerHTML = `
+                    <h3>✅ Login Exitoso</h3>
+                    <p><strong>Token:</strong> ${response.data.token.substring(
+                      0,
+                      50
+                    )}...</p>
+                    <p><strong>Rol:</strong> ${response.data.role}</p>
+                `;
+
+            // Probar obtener usuarios
+            try {
+              const usersResponse = await axios.get(`${API_URL}/users`, {
+                headers: {
+                  Authorization: `Bearer ${response.data.token}`,
+                },
+              });
+
+              resultDiv.innerHTML += `
+                        <h3>✅ Usuarios Obtenidos</h3>
+                        <p><strong>Total:</strong> ${
+                          usersResponse.data.count
+                        }</p>
+                        <ul>
+                            ${usersResponse.data.users
+                              .map(
+                                (user) =>
+                                  `<li>${user.username} (${user.role})</li>`
+                              )
+                              .join("")}
+                        </ul>
+                    `;
+            } catch (userError) {
+              resultDiv.innerHTML += `
+                        <h3>❌ Error obteniendo usuarios</h3>
+                        <p>${
+                          userError.response?.data?.error || userError.message
+                        }</p>
+                    `;
+            }
+          } catch (error) {
+            console.error("Error en login:", error);
+            resultDiv.innerHTML = `
+                    <h3>❌ Error de Login</h3>
+                    <p><strong>Mensaje:</strong> ${
+                      error.response?.data?.error || error.message
+                    }</p>
+                    <p><strong>Status:</strong> ${
+                      error.response?.status || "N/A"
+                    }</p>
+                `;
+          }
+        });
+    </script>
+  </body>
+</html>

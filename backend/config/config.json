@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "grodo",
+    "password": "admin123",
+    "database": "my-store",
+    "host": "db",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "grodo",
+    "password": "admin123",
+    "database": "my-store_test",
+    "host": "db",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "grodo",
+    "password": "admin123",
+    "database": "my-store_prod",
+    "host": "db",
+    "dialect": "postgres"
+  }
+}
